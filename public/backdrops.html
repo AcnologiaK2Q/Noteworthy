@@ -1,0 +1,408 @@
+<title>Noteworthy Backdrops</title>
+<style>
+  :root {
+    --ground: #12101D;
+    --surface: #1a1828;
+    --line: #35334a;
+    --ink: #D4DBEA;
+    --ink-dim: #8e93a8;
+    --primary: #8C77B8;
+    --secondary: #AAB0DF;
+    --accent: #D3A5D7;
+
+    --step-0: 0.8125rem;
+    --step-1: 0.9375rem;
+    --step-2: 1.375rem;
+    --step-3: 2rem;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: var(--step-1);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 78rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  header { display: flex; flex-direction: column; gap: 0.75rem; max-width: 46rem; }
+
+  h1 {
+    margin: 0;
+    font-size: var(--step-3);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .lede { margin: 0; color: var(--ink-dim); }
+
+  .grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  .stage {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: var(--ground);
+  }
+
+  .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  /* Sample hero type, so each backdrop is judged against real copy. */
+  .stage .copy {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 clamp(1rem, 5%, 2.5rem);
+    pointer-events: none;
+  }
+
+  .stage .copy b {
+    font-size: clamp(1.1rem, 3.4vw, 1.9rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  .stage .copy span { color: var(--ink-dim); }
+
+  .mark {
+    background-image: linear-gradient(transparent 58%, rgba(211,165,215,0.38) 58%, rgba(211,165,215,0.38) 94%, transparent 94%);
+    padding-inline: 0.12em;
+  }
+
+  .meta { display: flex; flex-direction: column; gap: 0.4rem; padding: 1.1rem 1.25rem 1.35rem; border-top: 1px solid var(--line); }
+
+  .name { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+  .name h2 { margin: 0; font-size: var(--step-2); font-weight: 600; letter-spacing: -0.015em; }
+
+  .tag {
+    font-size: var(--step-0);
+    color: var(--ink-dim);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .why { margin: 0; font-size: var(--step-0); color: var(--ink-dim); }
+
+  .fit { margin: 0.35rem 0 0; font-size: var(--step-0); color: var(--secondary); }
+
+  footer { border-top: 1px solid var(--line); padding-top: 1.5rem; color: var(--ink-dim); font-size: var(--step-0); max-width: 46rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage canvas { opacity: 0.9; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Four backdrops for the Noteworthy hero</h1>
+    <p class="lede">
+      Each panel runs the real animation over the real hero copy, at the site's own palette.
+      Watch them for a few seconds, then tell me which one to put on the landing page.
+    </p>
+  </header>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    All four are hand-drawn on canvas with no library, pause when scrolled out of view, and hold a
+    single frame when the viewer prefers reduced motion. Cost is the per-frame work at the size
+    shown.
+  </footer>
+</div>
+
+<script>
+(() => {
+  const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const VARIANTS = [
+    {
+      id: "vectors",
+      name: "Vector field",
+      tag: "current",
+      why: "A point cloud that joins its nearest neighbours as it turns.",
+      fit: "It is a picture of the retrieval itself, not decoration.",
+      init: vectorField,
+    },
+    {
+      id: "droplets",
+      name: "Droplets",
+      tag: "~80 bodies",
+      why: "Slow rising bubbles with a rim light and a little wobble.",
+      fit: "Calm and organic, though it says nothing about research.",
+      init: droplets,
+    },
+    {
+      id: "metaballs",
+      name: "Liquid",
+      tag: "blur + contrast",
+      why: "Blobs that merge and separate as they drift past each other.",
+      fit: "The most alive of the four. Heaviest to draw.",
+      init: metaballs,
+    },
+    {
+      id: "ink",
+      name: "Ink bloom",
+      tag: "~14 blooms",
+      why: "Marker ink spreading into paper, then settling.",
+      fit: "Closest to the highlighter you already liked.",
+      init: inkBloom,
+    },
+  ];
+
+  const grid = document.getElementById("grid");
+
+  for (const v of VARIANTS) {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="stage">
+        <canvas></canvas>
+        <div class="copy">
+          <b>Read papers.<br><span>Ask anything.</span><br>Keep the <em class="mark" style="font-style:normal">evidence</em>.</b>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="name">
+          <h2>${v.name}</h2>
+          <span class="tag">${v.tag}</span>
+        </div>
+        <p class="why">${v.why}</p>
+        <p class="fit">${v.fit}</p>
+      </div>`;
+    grid.appendChild(card);
+
+    const canvas = card.querySelector("canvas");
+    mount(canvas, v.init);
+  }
+
+  /* Shared canvas plumbing: DPR sizing, visibility pausing, teardown. */
+  function mount(canvas, factory) {
+    const ctx = canvas.getContext("2d");
+    let w = 0, h = 0, raf = 0, running = false, last = 0;
+    let scene = null;
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const r = canvas.getBoundingClientRect();
+      if (!r.width) return;
+      w = r.width; h = r.height;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      scene = factory(w, h);
+    }
+
+    function frame(now) {
+      const dt = Math.min(now - last, 50);
+      last = now;
+      if (scene) scene.draw(ctx, w, h, dt);
+      if (running && !REDUCED) raf = requestAnimationFrame(frame);
+    }
+
+    function start() {
+      if (running) return;
+      running = true;
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    }
+    function stop() { running = false; cancelAnimationFrame(raf); }
+
+    resize();
+    window.addEventListener("resize", () => { resize(); if (scene) scene.draw(ctx, w, h, 16); });
+
+    if (REDUCED) { scene && scene.draw(ctx, w, h, 16); return; }
+
+    new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()), { threshold: 0 })
+      .observe(canvas);
+    document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
+  }
+
+  const rand = (a, b) => a + Math.random() * (b - a);
+
+  /* 1. Vector field ----------------------------------------------------- */
+  function vectorField(w, h) {
+    const HUES = [259, 233, 295];
+    const N = 60, LINK = 0.55, FOV = 2.6;
+    const pts = Array.from({ length: N }, () => {
+      const t = Math.random() * Math.PI * 2, p = Math.acos(2 * Math.random() - 1);
+      const r = rand(0.55, 1);
+      return {
+        x: r * Math.sin(p) * Math.cos(t), y: r * Math.sin(p) * Math.sin(t), z: r * Math.cos(p),
+        hue: HUES[(Math.random() * 3) | 0],
+      };
+    });
+    let angle = 0;
+    const proj = pts.map(() => ({ sx: 0, sy: 0, d: 0, x: 0, y: 0, z: 0 }));
+
+    return { draw(ctx, w, h, dt) {
+      angle += dt * 0.000055;
+      const cos = Math.cos(angle), sin = Math.sin(angle);
+      const cx = w / 2, cy = h / 2, scale = Math.min(w, h) * 0.46;
+      ctx.clearRect(0, 0, w, h);
+
+      for (let i = 0; i < N; i++) {
+        const p = pts[i], rx = p.x * cos - p.z * sin, rz = p.x * sin + p.z * cos;
+        const d = FOV / (FOV + rz), o = proj[i];
+        o.sx = cx + rx * d * scale; o.sy = cy + p.y * d * scale;
+        o.d = d; o.x = rx; o.y = p.y; o.z = rz;
+      }
+      for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) {
+        const a = proj[i], b = proj[j];
+        const g = Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+        if (g > LINK) continue;
+        ctx.strokeStyle = `hsl(${pts[i].hue} 45% 70% / ${(1 - g / LINK) * 0.22 * ((a.d + b.d) / 2)})`;
+        ctx.lineWidth = 0.6;
+        ctx.beginPath(); ctx.moveTo(a.sx, a.sy); ctx.lineTo(b.sx, b.sy); ctx.stroke();
+      }
+      for (let i = 0; i < N; i++) {
+        const p = proj[i];
+        ctx.fillStyle = `hsl(${pts[i].hue} 55% 78% / ${0.16 + p.d * 0.3})`;
+        ctx.beginPath(); ctx.arc(p.sx, p.sy, Math.max(0.6, p.d * 1.7), 0, 6.284); ctx.fill();
+      }
+    }};
+  }
+
+  /* 2. Droplets --------------------------------------------------------- */
+  function droplets(w, h) {
+    const N = 34;
+    const drops = Array.from({ length: N }, () => spawn(w, h, true));
+
+    function spawn(w, h, anywhere) {
+      const r = rand(6, 30);
+      return {
+        x: rand(0, w), y: anywhere ? rand(0, h) : h + r * 2,
+        r, rise: rand(0.006, 0.022), phase: rand(0, 6.28), sway: rand(0.2, 0.8),
+        hue: [259, 233, 295][(Math.random() * 3) | 0], alpha: rand(0.10, 0.26),
+      };
+    }
+
+    return { draw(ctx, w, h, dt) {
+      ctx.clearRect(0, 0, w, h);
+      for (let i = 0; i < drops.length; i++) {
+        const d = drops[i];
+        d.y -= d.rise * dt * 6;
+        d.phase += dt * 0.0012;
+        if (d.y + d.r < -10) Object.assign(d, spawn(w, h, false));
+        const x = d.x + Math.sin(d.phase) * d.sway * 12;
+
+        // Body: brighter at the top-left where a light would catch it.
+        const g = ctx.createRadialGradient(x - d.r * 0.35, d.y - d.r * 0.4, d.r * 0.1, x, d.y, d.r);
+        g.addColorStop(0, `hsl(${d.hue} 60% 82% / ${d.alpha * 1.5})`);
+        g.addColorStop(0.7, `hsl(${d.hue} 50% 66% / ${d.alpha * 0.5})`);
+        g.addColorStop(1, `hsl(${d.hue} 45% 60% / 0)`);
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(x, d.y, d.r, 0, 6.284); ctx.fill();
+
+        ctx.strokeStyle = `hsl(${d.hue} 60% 84% / ${d.alpha * 0.9})`;
+        ctx.lineWidth = 0.7;
+        ctx.beginPath(); ctx.arc(x, d.y, d.r, 0, 6.284); ctx.stroke();
+
+        ctx.fillStyle = `hsl(${d.hue} 70% 92% / ${d.alpha * 1.1})`;
+        ctx.beginPath(); ctx.arc(x - d.r * 0.34, d.y - d.r * 0.38, d.r * 0.14, 0, 6.284); ctx.fill();
+      }
+    }};
+  }
+
+  /* 3. Liquid (metaballs via blur + contrast) --------------------------- */
+  function metaballs(w, h) {
+    const N = 9;
+    const balls = Array.from({ length: N }, () => ({
+      x: rand(0, w), y: rand(0, h),
+      vx: rand(-0.02, 0.02), vy: rand(-0.02, 0.02),
+      r: rand(Math.min(w, h) * 0.09, Math.min(w, h) * 0.2),
+      hue: [259, 233, 295][(Math.random() * 3) | 0],
+    }));
+
+    return { draw(ctx, w, h, dt) {
+      ctx.clearRect(0, 0, w, h);
+      ctx.save();
+      // The blur merges neighbours, the contrast snaps the union to an edge.
+      ctx.filter = "blur(16px) contrast(14)";
+      ctx.globalCompositeOperation = "lighter";
+
+      for (const b of balls) {
+        b.x += b.vx * dt; b.y += b.vy * dt;
+        if (b.x < -b.r) b.x = w + b.r; if (b.x > w + b.r) b.x = -b.r;
+        if (b.y < -b.r) b.y = h + b.r; if (b.y > h + b.r) b.y = -b.r;
+
+        const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+        g.addColorStop(0, `hsl(${b.hue} 55% 62% / 0.55)`);
+        g.addColorStop(1, `hsl(${b.hue} 55% 62% / 0)`);
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, 6.284); ctx.fill();
+      }
+      ctx.restore();
+    }};
+  }
+
+  /* 4. Ink bloom -------------------------------------------------------- */
+  function inkBloom(w, h) {
+    const MAX = 14;
+    const blooms = [];
+    let clock = 0;
+
+    function add(w, h) {
+      blooms.push({
+        x: rand(w * 0.05, w * 0.95), y: rand(h * 0.05, h * 0.95),
+        r: 0, max: rand(Math.min(w, h) * 0.12, Math.min(w, h) * 0.34),
+        life: 0, span: rand(4200, 8200),
+        hue: [295, 259, 233][(Math.random() * 3) | 0],
+      });
+    }
+    for (let i = 0; i < 6; i++) { add(w, h); blooms[i].life = rand(0, 3000); }
+
+    return { draw(ctx, w, h, dt) {
+      ctx.clearRect(0, 0, w, h);
+      clock += dt;
+      if (clock > 900 && blooms.length < MAX) { add(w, h); clock = 0; }
+
+      for (let i = blooms.length - 1; i >= 0; i--) {
+        const b = blooms[i];
+        b.life += dt;
+        const t = b.life / b.span;
+        if (t >= 1) { blooms.splice(i, 1); continue; }
+
+        // Spreads fast then settles, fading as it goes, the way ink soaks in.
+        const ease = 1 - Math.pow(1 - t, 3);
+        b.r = b.max * ease;
+        const alpha = Math.sin(t * Math.PI) * 0.3;
+
+        const g = ctx.createRadialGradient(b.x, b.y, b.r * 0.1, b.x, b.y, b.r);
+        g.addColorStop(0, `hsl(${b.hue} 55% 72% / ${alpha * 0.55})`);
+        g.addColorStop(0.55, `hsl(${b.hue} 50% 66% / ${alpha * 0.22})`);
+        g.addColorStop(1, `hsl(${b.hue} 50% 66% / 0)`);
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, 6.284); ctx.fill();
+      }
+    }};
+  }
+})();
+</script>
