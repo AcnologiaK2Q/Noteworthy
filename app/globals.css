@@ -85,6 +85,49 @@
   .glass {
     @apply border border-border/60 bg-card/60 backdrop-blur-xl;
   }
+
+  /* A highlighter swipe. Sits behind the text baseline rather than filling the
+     box, so it reads as ink laid over a word, not a label chip. */
+  .marker {
+    background-image: linear-gradient(
+      transparent 58%,
+      hsl(var(--accent) / 0.38) 58%,
+      hsl(var(--accent) / 0.38) 94%,
+      transparent 94%
+    );
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    padding-inline: 0.12em;
+  }
+
+  /* The stroke draws itself once on load. One moment, not an effects budget. */
+  .marker-draw {
+    animation: marker-draw 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+  }
+
+  /* Faint ruling, the way a page shows through. */
+  .ruled {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      hsl(var(--border) / 0.5) 0 1px,
+      transparent 1px 2.25rem
+    );
+  }
+}
+
+@keyframes marker-draw {
+  from {
+    background-size: 0% 100%;
+  }
+  to {
+    background-size: 100% 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marker-draw {
+    animation: none;
+  }
 }
 
 /* Scrollbars tuned to the dark surface so they don't read as OS chrome. */

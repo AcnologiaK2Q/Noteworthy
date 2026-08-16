@@ -58,7 +58,7 @@ export default async function LandingPage() {
             <br />
             <span className="text-muted-foreground">Ask anything.</span>
             <br />
-            Keep the evidence.
+            Keep the <span className="marker marker-draw">evidence</span>.
           </h1>
 
           <p className="mt-8 max-w-xl text-balance text-lg text-muted-foreground">

@@ -31,13 +31,19 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
             onClick={onNavigate}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
-              active
-                ? "bg-primary/15 font-medium text-foreground"
-                : "text-muted-foreground hover:bg-card hover:text-foreground",
+              "relative flex items-center gap-3 py-2 pl-4 pr-3 text-sm transition-colors",
+              active ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground",
             )}
           >
-            <Icon className={cn("size-4", active && "text-primary")} />
+            {/* A ruled margin mark rather than a filled pill. */}
+            <span
+              aria-hidden="true"
+              className={cn(
+                "absolute inset-y-1 left-0 w-[2px] rounded-full transition-colors",
+                active ? "bg-primary" : "bg-transparent",
+              )}
+            />
+            <Icon className={cn("size-4", active ? "text-primary" : "text-muted-foreground/70")} />
             {label}
           </Link>
         );
