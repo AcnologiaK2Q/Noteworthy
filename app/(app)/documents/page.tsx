@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FileText } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { UploadDropzone } from "@/features/documents/components/UploadDropzone";
 import { createClient } from "@/lib/supabase/server";
 import type { DocumentStatus } from "@/lib/types/database.types";
@@ -18,21 +19,42 @@ const STATUS_VARIANT: Record<DocumentStatus, "default" | "secondary" | "destruct
 export default async function DocumentsPage() {
   const supabase = createClient();
 
-  const { data: documents } = await supabase
-    .from("documents")
-    .select("id, title, status, page_count, created_at, error_message")
-    .order("created_at", { ascending: false });
+  const [
+    {
+      data: { user },
+    },
+    { data: documents },
+  ] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase
+      .from("documents")
+      .select("id, title, status, page_count, created_at, error_message")
+      .order("created_at", { ascending: false }),
+  ]);
+
+  const isGuest = user?.is_anonymous ?? false;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 md:px-8">
       <header className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight">Papers</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Upload a PDF, then ask questions and get answers with page-level citations.
+          {isGuest
+            ? "You're in the demo workspace. Open a paper and ask it anything."
+            : "Upload a PDF, then ask questions and get answers with page-level citations."}
         </p>
       </header>
 
-      <UploadDropzone />
+      {isGuest ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3">
+          <p className="text-sm">Guest session — uploads are disabled.</p>
+          <Button asChild size="sm">
+            <Link href="/signup">Sign up to add your own papers</Link>
+          </Button>
+        </div>
+      ) : (
+        <UploadDropzone />
+      )}
 
       <section className="mt-8">
         {!documents || documents.length === 0 ? (

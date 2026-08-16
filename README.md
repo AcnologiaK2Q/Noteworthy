@@ -155,6 +155,16 @@ A free Groq API key is available at [console.groq.com](https://console.groq.com/
 npm run dev
 ```
 
+### 7. Optional — seed the public demo
+
+The demo lets visitors try the full ask-and-cite flow without signing up. Seed it with a paper you have the right to redistribute (an arXiv preprint, for example):
+
+```bash
+npm run seed:demo -- ./path/to/paper.pdf "Attention Is All You Need"
+```
+
+The script runs the paper through the same ingestion pipeline as a normal upload and flags it `is_demo`. Then enable **Anonymous sign-ins** in the Supabase dashboard under **Authentication → Sign In / Providers**, so `/demo` can create guest sessions.
+
 ---
 
 ## Roadmap

@@ -73,6 +73,12 @@ export default async function LandingPage() {
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
+
+            {!user && (
+              <Button asChild variant="outline" size="lg" className="h-12 px-6">
+                <Link href="/demo">Try the demo — no signup</Link>
+              </Button>
+            )}
           </div>
         </section>
 
