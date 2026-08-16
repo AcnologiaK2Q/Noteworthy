@@ -7,6 +7,7 @@ import {
   EvidenceDemo,
   type DemoExchange,
 } from "@/features/marketing/components/EvidenceDemo";
+import { VectorField } from "@/features/marketing/components/VectorField";
 import { createClient } from "@/lib/supabase/server";
 
 const STEPS = [
@@ -143,7 +144,15 @@ export default async function LandingPage() {
       </header>
 
       <main className="mx-auto max-w-6xl px-6">
-        <section className="py-24 md:py-32">
+        <section className="relative py-24 md:py-32">
+          {/* Sits behind the hero and fades out before it reaches the copy. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -inset-x-32 -top-24 bottom-0 -z-10 [mask-image:radial-gradient(70%_60%_at_60%_40%,black,transparent)]"
+          >
+            <VectorField />
+          </div>
+
           <h1 className="max-w-4xl text-5xl font-semibold leading-[0.95] tracking-tighter md:text-7xl lg:text-8xl">
             Read papers.
             <br />
