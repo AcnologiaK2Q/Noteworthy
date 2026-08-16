@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark-only palette. Values are HSL triplets consumed as hsl(var(--token)). */
+@layer base {
+  :root,
+  .dark {
+    --background: 249 29% 9%;
+    --foreground: 221 34% 87%;
+
+    --card: 229 33% 20%;
+    --card-foreground: 221 34% 87%;
+
+    --popover: 229 33% 16%;
+    --popover-foreground: 221 34% 87%;
+
+    --primary: 259 31% 59%;
+    --primary-foreground: 249 29% 9%;
+
+    --secondary: 233 45% 77%;
+    --secondary-foreground: 249 29% 9%;
+
+    --muted: 242 14% 25%;
+    --muted-foreground: 233 20% 68%;
+
+    --accent: 295 38% 75%;
+    --accent-foreground: 249 29% 9%;
+
+    --destructive: 0 62% 58%;
+    --destructive-foreground: 221 34% 92%;
+
+    --success: 152 45% 55%;
+    --warning: 38 70% 62%;
+
+    --border: 242 14% 26%;
+    --input: 242 14% 26%;
+    --ring: 259 31% 59%;
+
+    --chart-1: 259 31% 59%;
+    --chart-2: 233 45% 77%;
+    --chart-3: 295 38% 75%;
+    --chart-4: 242 14% 45%;
+    --chart-5: 221 34% 87%;
+
+    --sidebar: 249 29% 11%;
+    --sidebar-foreground: 221 34% 87%;
+    --sidebar-primary: 259 31% 59%;
+    --sidebar-primary-foreground: 249 29% 9%;
+    --sidebar-accent: 229 33% 20%;
+    --sidebar-accent-foreground: 221 34% 87%;
+    --sidebar-border: 242 14% 26%;
+    --sidebar-ring: 259 31% 59%;
+
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Ambient gradient wash used behind the dashboard and marketing hero. */
+  .bg-aurora {
+    background-image:
+      radial-gradient(60rem 40rem at 12% -10%, hsl(259 31% 59% / 0.18), transparent 60%),
+      radial-gradient(50rem 35rem at 92% 0%, hsl(295 38% 75% / 0.12), transparent 60%),
+      radial-gradient(45rem 40rem at 50% 110%, hsl(233 45% 77% / 0.1), transparent 60%);
+  }
+
+  .glass {
+    @apply border border-border/60 bg-card/60 backdrop-blur-xl;
+  }
+}
+
+/* Scrollbars tuned to the dark surface so they don't read as OS chrome. */
+@layer base {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full border-4 border-solid border-transparent bg-muted bg-clip-content;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50 bg-clip-content;
+  }
+}
