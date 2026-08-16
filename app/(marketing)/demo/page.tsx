@@ -32,7 +32,7 @@ export default async function DemoPage() {
     <div className="bg-aurora grid min-h-dvh place-items-center px-6 py-12">
       <div className="w-full max-w-lg text-center">
         <Link href="/" className="inline-block">
-          <Logo />
+          <Logo animate className="text-2xl" />
         </Link>
 
         <h1 className="mt-10 text-3xl font-semibold tracking-tight">Try it on a real paper</h1>

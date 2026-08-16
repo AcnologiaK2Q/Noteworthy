@@ -6,7 +6,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="bg-aurora flex min-h-dvh flex-col items-center justify-center px-6 py-12">
       <Link href="/" className="mb-10">
-        <Logo />
+        <Logo animate className="text-2xl" />
       </Link>
 
       <main className="glass w-full max-w-md rounded-2xl p-8 shadow-glow">{children}</main>
