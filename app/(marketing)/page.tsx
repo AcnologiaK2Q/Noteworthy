@@ -76,7 +76,7 @@ export default async function LandingPage() {
 
             {!user && (
               <Button asChild variant="outline" size="lg" className="h-12 px-6">
-                <Link href="/demo">Try the demo — no signup</Link>
+                <Link href="/demo">Try the demo, no signup</Link>
               </Button>
             )}
           </div>
@@ -106,7 +106,7 @@ export default async function LandingPage() {
 
       <footer className="mx-auto max-w-6xl border-t border-border px-6 py-10">
         <p className="text-xs text-muted-foreground">
-          Noteworthy — an AI research workspace built with Next.js, Supabase, and pgvector.
+          Noteworthy. An AI research workspace built with Next.js, Supabase, and pgvector.
         </p>
       </footer>
     </div>

@@ -8,7 +8,7 @@ export interface ChatMessage {
 /**
  * The only surface the rest of the app is allowed to know about. Swapping
  * providers means adding a sibling of `groq.ts` and changing the factory in
- * `index.ts` — no route or feature code changes.
+ * `index.ts`, with no route or feature code changes.
  */
 export interface LLMProvider {
   readonly id: string;

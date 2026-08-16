@@ -23,7 +23,7 @@ export interface GeneratedCard {
 // Groq's context window is generous but not unlimited; long papers get trimmed.
 const MAX_SOURCE_CHARS = 24_000;
 
-const JSON_INSTRUCTION = `Respond with JSON only — no prose, no markdown fences — in exactly this shape:
+const JSON_INSTRUCTION = `Respond with JSON only, no prose and no markdown fences, in exactly this shape:
 {"cards":[{"question":"...","answer":"..."}]}`;
 
 /**

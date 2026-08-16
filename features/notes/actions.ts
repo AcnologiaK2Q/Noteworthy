@@ -73,7 +73,7 @@ export async function saveAnswerAsNote(input: {
   citations: Citation[];
 }): Promise<{ id?: string; error?: string }> {
   const sources = input.citations.length
-    ? `\n\n---\n\n**Sources** — ${input.documentTitle}\n\n${input.citations
+    ? `\n\n---\n\n**Sources** (${input.documentTitle})\n\n${input.citations
         .map((c) => `- ${c.page ? `p. ${c.page}` : "page unknown"}: ${c.snippet.trim()}…`)
         .join("\n")}`
     : "";

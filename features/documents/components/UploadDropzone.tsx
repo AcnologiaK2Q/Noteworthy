@@ -53,7 +53,7 @@ export function UploadDropzone() {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Processing failed.");
 
-      toast.success(`Ready — ${result.chunkCount} passages indexed.`);
+      toast.success(`Ready. ${result.chunkCount} passages indexed.`);
       router.push(`/documents/${data.documentId}`);
       router.refresh();
     } catch (err) {

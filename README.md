@@ -1,6 +1,6 @@
 # Noteworthy
 
-An AI research workspace. Upload a paper, ask it questions in plain language, and get answers grounded in the exact passages they came from — with page-level citations you can click to see the evidence.
+An AI research workspace. Upload a paper, ask it questions in plain language, and get answers grounded in the exact passages they came from, with page-level citations you can click to see the evidence.
 
 **Core loop:** `PDF → Ask → Evidence → Save`
 
@@ -12,13 +12,13 @@ Built with Next.js 14 (App Router), Supabase (Auth + Postgres + pgvector + Stora
 
 **Answers are retrieval-grounded, not model recall.** Every document question runs a semantic search over that paper's own passages first; the model is instructed to answer only from those excerpts and to cite them inline. Citation chips map back to specific chunks, and clicking one scrolls to and highlights the source text. When the best match is weak, the UI says so rather than presenting a confident guess.
 
-**The LLM provider is behind a one-file seam.** `lib/ai/provider.ts` defines the interface; `lib/ai/groq.ts` is the only file that knows which vendor is in use. Swapping providers means adding a sibling implementation and changing one line in `lib/ai/index.ts` — no route or feature code changes. This is what makes the planned multi-model comparison feature an additive change rather than a rewrite.
+**The LLM provider is behind a one-file seam.** `lib/ai/provider.ts` defines the interface; `lib/ai/groq.ts` is the only file that knows which vendor is in use. Swapping providers means adding a sibling implementation and changing one line in `lib/ai/index.ts`, with no route or feature code changes. This is what makes the planned multi-model comparison feature an additive change rather than a rewrite.
 
-**Embeddings run on Supabase, not a second vendor.** Groq has no embeddings endpoint. Rather than add another API key and rate limit, a Supabase Edge Function serves the runtime's built-in `gte-small` model (384 dimensions). Vectors live in the same Postgres database as the rest of the data, indexed with pgvector's HNSW — no separate vector database to operate.
+**Embeddings run on Supabase, not a second vendor.** Groq has no embeddings endpoint. Rather than add another API key and rate limit, a Supabase Edge Function serves the runtime's built-in `gte-small` model (384 dimensions). Vectors live in the same Postgres database as the rest of the data, indexed with pgvector's HNSW. There is no separate vector database to operate.
 
 **Row-level security is the authorization model.** Supabase exposes tables over PostgREST, so access control lives in the database rather than in application code. Every user-owned table has RLS enabled with policies scoped to `auth.uid()`, and storage objects are namespaced by user id so the bucket policy can enforce ownership from the path.
 
-**Statistics are measured, never decorative.** An append-only `events` table records real timings and outcomes across the pipeline. The dashboard renders an em dash instead of a plausible-looking zero when there is no data yet.
+**Statistics are measured, never decorative.** An append-only `events` table records real timings and outcomes across the pipeline. The dashboard renders "N/A" instead of a plausible-looking zero when there is no data yet.
 
 ---
 
@@ -68,13 +68,13 @@ flowchart TD
 
 ## Tech stack
 
-- **Framework** — Next.js 14 (App Router, Server Components, Server Actions), TypeScript strict
-- **Database** — Supabase Postgres with `pgvector`, row-level security on every table
-- **Auth** — Supabase Auth via `@supabase/ssr`
-- **Storage** — Supabase Storage, private bucket with path-scoped policies
-- **Inference** — Groq (`llama-3.3-70b-versatile`) through the Vercel AI SDK
-- **Embeddings** — Supabase Edge Function running `gte-small`
-- **UI** — Tailwind CSS + shadcn/ui, dark theme
+- **Framework**: Next.js 14 (App Router, Server Components, Server Actions), TypeScript strict
+- **Database**: Supabase Postgres with `pgvector`, row-level security on every table
+- **Auth**: Supabase Auth via `@supabase/ssr`
+- **Storage**: Supabase Storage, private bucket with path-scoped policies
+- **Inference**: Groq (`llama-3.3-70b-versatile`) through the Vercel AI SDK
+- **Embeddings**: Supabase Edge Function running `gte-small`
+- **UI**: Tailwind CSS + shadcn/ui, dark theme
 
 ---
 
@@ -86,7 +86,7 @@ app/                  Routing and composition only
   (auth)/             Login, signup, OAuth callback
   (app)/              Authenticated workspace
   api/                Route handlers (chat, upload, document Q&A)
-features/             Domain modules — components, actions, and logic
+features/             Domain modules: components, actions, and logic
   auth/ chat/ dashboard/ documents/ flashcards/ notes/
 lib/
   ai/                 Provider interface, Groq implementation, prompts
@@ -113,7 +113,7 @@ npm install
 
 Create a project at [supabase.com](https://supabase.com), then apply the schema.
 
-The quickest way is to open the **SQL Editor** in the Supabase dashboard, paste the entire contents of [`supabase/schema.sql`](supabase/schema.sql), and run it once — it contains every table, index, RLS policy, and function.
+The quickest way is to open the **SQL Editor** in the Supabase dashboard, paste the entire contents of [`supabase/schema.sql`](supabase/schema.sql), and run it once. It contains every table, index, RLS policy, and function.
 
 Or apply the individual migrations with the CLI:
 
@@ -159,7 +159,7 @@ A free Groq API key is available at [console.groq.com](https://console.groq.com/
 npm run dev
 ```
 
-### 7. Optional — seed the public demo
+### 7. Optional: seed the public demo
 
 The demo lets visitors try the full ask-and-cite flow without signing up. Seed it with a paper you have the right to redistribute (an arXiv preprint, for example):
 
@@ -173,10 +173,10 @@ The script runs the paper through the same ingestion pipeline as a normal upload
 
 ## Roadmap
 
-- **Phase 2** — arXiv and Semantic Scholar search, automated paper analysis, citation generator
-- **Phase 3** — project workspaces, task lists, study schedules
-- **Phase 4** — multi-model comparison, saved prompt library
-- **Phase 5** — real-time collaboration on shared notes and papers
+- **Phase 2**: arXiv and Semantic Scholar search, automated paper analysis, citation generator
+- **Phase 3**: project workspaces, task lists, study schedules
+- **Phase 4**: multi-model comparison, saved prompt library
+- **Phase 5**: real-time collaboration on shared notes and papers
 
 ---
 

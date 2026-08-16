@@ -23,7 +23,7 @@ export default async function DemoPage() {
     .eq("status", "ready")
     .order("created_at", { ascending: true });
 
-  // Already signed in — no reason to sit on the demo gate.
+  // Already signed in, so there is no reason to sit on the demo gate.
   if (user && demoDocs?.length) {
     redirect(`/documents/${demoDocs[0].id}`);
   }

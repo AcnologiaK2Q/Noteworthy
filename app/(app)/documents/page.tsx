@@ -47,7 +47,7 @@ export default async function DocumentsPage() {
 
       {isGuest ? (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3">
-          <p className="text-sm">Guest session — uploads are disabled.</p>
+          <p className="text-sm">Guest session. Uploads are disabled.</p>
           <Button asChild size="sm">
             <Link href="/signup">Sign up to add your own papers</Link>
           </Button>

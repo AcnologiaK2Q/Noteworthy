@@ -154,7 +154,7 @@ export function DocChatPanel({
 
               <div className="mt-4 flex items-center justify-between gap-3">
                 {!exchange.grounded && (
-                  <p className="text-xs text-warning">Weak match — verify against the paper.</p>
+                  <p className="text-xs text-warning">Weak match. Verify against the paper.</p>
                 )}
                 <Button
                   size="sm"

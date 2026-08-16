@@ -26,7 +26,7 @@ export function buildRagSystemPrompt(chunks: RetrievedChunk[], documentTitle?: s
     documentTitle ? `the paper "${documentTitle}"` : "the user's research library"
   }.
 
-Answer ONLY from the excerpts below. If they do not contain the answer, say so directly — do not draw on outside knowledge to fill the gap.
+Answer ONLY from the excerpts below. If they do not contain the answer, say so directly. Do not draw on outside knowledge to fill the gap.
 
 Cite every claim with the bracketed excerpt number it came from, like [1] or [2][3]. Put citations inline, immediately after the sentence they support.
 

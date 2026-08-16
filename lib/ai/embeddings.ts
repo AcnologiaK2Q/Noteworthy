@@ -16,7 +16,7 @@ export function createEmbeddingProvider(): EmbeddingProvider {
   if (!authKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY is not set.");
 
   // The Edge Function runs out of memory somewhere above ten passages, and the
-  // exact ceiling moves with passage length — so on a resource-limit response
+  // exact ceiling moves with passage length, so on a resource-limit response
   // the batch is split and retried rather than failing the whole ingestion.
   async function embedBatch(texts: string[]): Promise<number[][]> {
     const response = await fetch(url!, {

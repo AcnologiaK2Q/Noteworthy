@@ -8,7 +8,7 @@ export interface UserStats {
   notesCount: number;
   flashcardsCount: number;
   cardsDue: number;
-  /** null until at least one retrieval has run — the UI renders an em dash. */
+  /** null until at least one retrieval has run; the UI renders N/A. */
   retrievalSuccessRate: number | null;
   avgResponseMs: number | null;
   avgProcessingMs: number | null;

@@ -15,22 +15,22 @@ export default async function SettingsPage() {
   const stats = await getUserStats(supabase);
 
   const rows: { label: string; value: string }[] = [
-    { label: "Email", value: user?.email ?? "—" },
+    { label: "Email", value: user?.email ?? "N/A" },
     { label: "Papers indexed", value: String(stats.documentsReady) },
     { label: "Questions answered", value: String(stats.questionsAnswered) },
     { label: "Notes", value: String(stats.notesCount) },
     { label: "Flashcards", value: String(stats.flashcardsCount) },
     {
       label: "Avg. paper processing",
-      value: stats.avgProcessingMs === null ? "—" : `${(stats.avgProcessingMs / 1000).toFixed(1)}s`,
+      value: stats.avgProcessingMs === null ? "N/A" : `${(stats.avgProcessingMs / 1000).toFixed(1)}s`,
     },
     {
       label: "Avg. answer latency",
-      value: stats.avgResponseMs === null ? "—" : `${(stats.avgResponseMs / 1000).toFixed(1)}s`,
+      value: stats.avgResponseMs === null ? "N/A" : `${(stats.avgResponseMs / 1000).toFixed(1)}s`,
     },
     {
       label: "Retrieval success rate",
-      value: stats.retrievalSuccessRate === null ? "—" : `${stats.retrievalSuccessRate}%`,
+      value: stats.retrievalSuccessRate === null ? "N/A" : `${stats.retrievalSuccessRate}%`,
     },
   ];
 

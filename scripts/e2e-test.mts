@@ -34,7 +34,7 @@ const admin = createClient<Database>(url, serviceKey, { auth: { persistSession: 
 const results: { name: string; pass: boolean; detail: string }[] = [];
 function check(name: string, pass: boolean, detail = "") {
   results.push({ name, pass, detail });
-  console.log(`${pass ? "PASS" : "FAIL"}  ${name}${detail ? `  — ${detail}` : ""}`);
+  console.log(`${pass ? "PASS" : "FAIL"}  ${name}${detail ? `  (${detail})` : ""}`);
 }
 
 const stamp = Date.now();
@@ -66,7 +66,7 @@ const { data: profile } = await admin
   .maybeSingle();
 check("profile auto-created by trigger", !!profile, profile?.full_name ?? "no row");
 
-// Session-scoped client — every query below runs under user A's RLS policies.
+// Session-scoped client: every query below runs under user A's RLS policies.
 const asUserA = createClient<Database>(url, anonKey, { auth: { persistSession: false } });
 const { data: signIn, error: signInErr } = await asUserA.auth.signInWithPassword(userA);
 check("sign in with password", !signInErr && !!signIn.session, signInErr?.message ?? "session ok");

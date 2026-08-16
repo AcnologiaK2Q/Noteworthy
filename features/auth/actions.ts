@@ -56,7 +56,7 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
 
   if (error) return { error: error.message };
 
-  // With email confirmation on, there is no session yet — tell the user to check
+  // With email confirmation on, there is no session yet, so tell the user to check
   // their inbox instead of bouncing them to a protected route.
   if (!data.session) {
     return { error: null, message: "Check your email to confirm your account." };

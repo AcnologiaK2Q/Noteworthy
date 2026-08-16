@@ -41,12 +41,12 @@ export default async function DashboardPage() {
         <StatTile label="Questions answered" value={String(stats.questionsAnswered)} />
         <StatTile
           label="Retrieval success"
-          value={stats.retrievalSuccessRate === null ? "—" : `${stats.retrievalSuccessRate}%`}
+          value={stats.retrievalSuccessRate === null ? "N/A" : `${stats.retrievalSuccessRate}%`}
           hint={stats.retrievalSuccessRate === null ? "No queries yet" : "Answers with strong evidence"}
         />
         <StatTile
           label="Avg. response"
-          value={stats.avgResponseMs === null ? "—" : `${(stats.avgResponseMs / 1000).toFixed(1)}s`}
+          value={stats.avgResponseMs === null ? "N/A" : `${(stats.avgResponseMs / 1000).toFixed(1)}s`}
           hint={stats.avgResponseMs === null ? "No queries yet" : undefined}
         />
       </section>
