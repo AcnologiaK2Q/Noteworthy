@@ -8,7 +8,9 @@ import type { Database } from "@/lib/types/database.types";
 import { chunkPages } from "./chunkText";
 import { extractPdfPages } from "./extractText";
 
-const EMBED_BATCH_SIZE = 20;
+// Sized to stay inside the embedding Edge Function's memory ceiling; the
+// provider splits further if a batch of long passages still trips it.
+const EMBED_BATCH_SIZE = 10;
 
 interface IngestArgs {
   supabase: SupabaseClient<Database>;

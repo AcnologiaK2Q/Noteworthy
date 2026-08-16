@@ -40,9 +40,12 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const embeddings = await Promise.all(
-      texts.map((text: string) => session.run(text, { mean_pool: true, normalize: true })),
-    );
+    // Sequential on purpose: running the whole batch concurrently spikes memory
+    // past the Edge Function resource limit on larger batches.
+    const embeddings: number[][] = [];
+    for (const text of texts) {
+      embeddings.push(await session.run(text, { mean_pool: true, normalize: true }));
+    }
     return Response.json({ embeddings });
   } catch (error) {
     return Response.json(
