@@ -46,12 +46,21 @@ export async function POST(
   const elapsed = startTimer();
 
   try {
-    const { chunks, grounded } = await retrieveChunks({
-      supabase,
-      userId: user.id,
-      question,
-      documentId: doc.id,
-    });
+    let chunks, grounded;
+    try {
+      ({ chunks, grounded } = await retrieveChunks({
+        supabase,
+        userId: user.id,
+        question,
+        documentId: doc.id,
+      }));
+    } catch (error) {
+      // Naming the failing stage matters: a bare upstream message like
+      // "Invalid API Key" is ambiguous between the embedder and the model.
+      throw new Error(
+        `Search step failed: ${error instanceof Error ? error.message : "unknown error"}`,
+      );
+    }
 
     if (chunks.length === 0) {
       return NextResponse.json({
@@ -61,12 +70,19 @@ export async function POST(
       });
     }
 
-    const { text } = await generateText({
-      model: getLLMProvider().model(),
-      system: buildRagSystemPrompt(chunks, doc.title),
-      prompt: question,
-      temperature: 0.2,
-    });
+    let text: string;
+    try {
+      ({ text } = await generateText({
+        model: getLLMProvider().model(),
+        system: buildRagSystemPrompt(chunks, doc.title),
+        prompt: question,
+        temperature: 0.2,
+      }));
+    } catch (error) {
+      throw new Error(
+        `Model step failed: ${error instanceof Error ? error.message : "unknown error"}`,
+      );
+    }
 
     // Only surface excerpts the model actually cited, so a source chip always
     // corresponds to evidence behind a claim.
