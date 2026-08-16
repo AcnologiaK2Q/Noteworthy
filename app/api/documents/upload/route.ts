@@ -3,8 +3,10 @@ import { NextResponse, type NextRequest } from "next/server";
 import { ingestDocument } from "@/features/documents/pipeline/ingestDocument";
 import { createClient } from "@/lib/supabase/server";
 
-// Extraction plus embedding for a full paper exceeds the default 10s budget.
-export const maxDuration = 300;
+// Extraction plus embedding for a full paper exceeds the default budget. 60s is
+// the ceiling on Vercel's Hobby plan; raise this alongside the plan if large
+// papers start timing out during ingestion.
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   const supabase = createClient();
