@@ -17,7 +17,9 @@ import { createClient } from "@supabase/supabase-js";
 import { extractText, getDocumentProxy } from "unpdf";
 
 const DEMO_EMAIL = "demo@noteworthy.local";
-const EMBED_BATCH_SIZE = 20;
+// Matches the app's ingestion batch; larger batches exceed the embedding
+// Edge Function's worker memory limit.
+const EMBED_BATCH_SIZE = 10;
 
 await loadEnv();
 
@@ -30,7 +32,6 @@ if (!pdfPath) {
 
 const supabaseUrl = requireEnv("NEXT_PUBLIC_SUPABASE_URL");
 const serviceKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
-const anonKey = requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
 const embedUrl = requireEnv("SUPABASE_EDGE_EMBED_URL");
 
 const supabase = createClient(supabaseUrl, serviceKey, {
@@ -118,14 +119,28 @@ async function ensureDemoUser() {
   return data.user.id;
 }
 
+// Mirrors lib/ai/embeddings.ts: the worker's memory ceiling moves with passage
+// length, so a resource-limit response splits the batch instead of failing.
 async function embed(texts) {
   const response = await fetch(embedUrl, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${anonKey}` },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${serviceKey}` },
     body: JSON.stringify({ texts }),
   });
 
-  if (!response.ok) throw new Error(`Embedding failed: ${await response.text()}`);
+  if (!response.ok) {
+    const body = await response.text();
+    const outOfResources = response.status === 546 || body.includes("WORKER_RESOURCE_LIMIT");
+
+    if (outOfResources && texts.length > 1) {
+      const mid = Math.ceil(texts.length / 2);
+      const left = await embed(texts.slice(0, mid));
+      const right = await embed(texts.slice(mid));
+      return [...left, ...right];
+    }
+
+    throw new Error(`Embedding failed: ${body}`);
+  }
 
   const { embeddings } = await response.json();
   return embeddings;
