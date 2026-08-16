@@ -56,10 +56,20 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
 
   if (error) return { error: error.message };
 
+  // Supabase returns a success-shaped response for an already-registered email
+  // so the endpoint cannot be used to enumerate accounts, and sends no mail.
+  // An empty identities array is the documented way to detect that case.
+  if (data.user && data.user.identities?.length === 0) {
+    return { error: "An account with this email already exists. Sign in instead." };
+  }
+
   // With email confirmation on, there is no session yet, so tell the user to check
   // their inbox instead of bouncing them to a protected route.
   if (!data.session) {
-    return { error: null, message: "Check your email to confirm your account." };
+    return {
+      error: null,
+      message: "Check your email to confirm your account, then sign in.",
+    };
   }
 
   revalidatePath("/", "layout");
