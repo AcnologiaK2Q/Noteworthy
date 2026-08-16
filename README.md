@@ -111,7 +111,11 @@ npm install
 
 ### 2. Create a Supabase project
 
-Create a project at [supabase.com](https://supabase.com), then apply the migrations in `supabase/migrations/` **in numerical order** using the SQL Editor, or with the CLI:
+Create a project at [supabase.com](https://supabase.com), then apply the schema.
+
+The quickest way is to open the **SQL Editor** in the Supabase dashboard, paste the entire contents of [`supabase/schema.sql`](supabase/schema.sql), and run it once — it contains every table, index, RLS policy, and function.
+
+Or apply the individual migrations with the CLI:
 
 ```bash
 supabase link --project-ref YOUR_PROJECT_REF
