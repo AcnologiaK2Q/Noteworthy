@@ -19,20 +19,22 @@ const STATUS_VARIANT: Record<DocumentStatus, "default" | "secondary" | "destruct
 export default async function DocumentsPage() {
   const supabase = createClient();
 
-  const [
-    {
-      data: { user },
-    },
-    { data: documents },
-  ] = await Promise.all([
-    supabase.auth.getUser(),
-    supabase
-      .from("documents")
-      .select("id, title, status, page_count, created_at, error_message")
-      .order("created_at", { ascending: false }),
-  ]);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const isGuest = user?.is_anonymous ?? false;
+
+  // Guests browse the public demo papers; everyone else sees only their own,
+  // so a shared demo document never appears inside a personal library.
+  const query = supabase
+    .from("documents")
+    .select("id, title, status, page_count, created_at, error_message")
+    .order("created_at", { ascending: false });
+
+  const { data: documents } = await (isGuest
+    ? query.eq("is_demo", true)
+    : query.eq("user_id", user?.id ?? ""));
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 md:px-8">

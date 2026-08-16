@@ -1,16 +1,50 @@
 import { cn } from "@/lib/utils";
 
+/**
+ * The mark is a page with a single line picked out: the cited passage an
+ * answer points back to, which is the whole idea of the product.
+ */
+export function LogoMark({ className }: { className?: string }) {
+  return (
+    <span
+      className={cn(
+        "grid size-8 shrink-0 place-items-center rounded-[0.6rem] bg-primary text-primary-foreground",
+        className,
+      )}
+    >
+      <svg viewBox="0 0 20 20" className="size-[1.15rem]" aria-hidden="true">
+        <rect
+          x="4.25"
+          y="2.5"
+          width="11.5"
+          height="15"
+          rx="1.6"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          opacity="0.55"
+        />
+        <path
+          d="M7.4 7h5.2M7.4 13h3.4"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinecap="round"
+          opacity="0.55"
+        />
+        {/* The marked line sits proud of the others. */}
+        <path d="M7.4 10h5.2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    </span>
+  );
+}
+
 export function Logo({ className, compact = false }: { className?: string; compact?: boolean }) {
   return (
     <span className={cn("flex items-center gap-2.5", className)}>
-      <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground">
-        <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M5 4h9l5 5v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z" />
-          <path d="M14 4v5h5" />
-          <path d="M8.5 14h7M8.5 17.5h4" />
-        </svg>
-      </span>
-      {!compact && <span className="text-lg font-semibold tracking-tight">Noteworthy</span>}
+      <LogoMark />
+      {!compact && (
+        <span className="text-lg font-semibold tracking-tight">Noteworthy</span>
+      )}
     </span>
   );
 }

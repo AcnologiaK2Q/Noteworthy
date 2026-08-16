@@ -50,7 +50,7 @@ export function Topbar({ email, fullName, avatarUrl }: TopbarProps) {
           </SheetContent>
         </Sheet>
 
-        <Link href="/dashboard" className="md:hidden">
+        <Link href="/" className="md:hidden" aria-label="Noteworthy home">
           <Logo compact />
         </Link>
       </div>

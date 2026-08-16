@@ -143,7 +143,7 @@ export function DocChatPanel({
                         key={citation.chunkId}
                         onClick={() => onCiteClick?.(citation)}
                         title={citation.snippet}
-                        className="rounded-md bg-primary/15 px-2 py-1 font-mono text-xs text-secondary transition-colors hover:bg-primary/30"
+                        className="rounded-md bg-primary/15 px-2 py-1 text-xs font-medium text-secondary transition-colors hover:bg-primary/30"
                       >
                         {citation.page ? `p.${citation.page}` : "source"}
                       </button>

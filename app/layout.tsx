@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 
+// One typeface across the whole interface. The mono is reserved for code
+// inside markdown, never for UI chrome.
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 

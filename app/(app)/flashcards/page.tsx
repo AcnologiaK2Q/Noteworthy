@@ -45,7 +45,7 @@ export default async function FlashcardsPage() {
                   <p className="mt-1 text-xs capitalize text-muted-foreground">
                     from {deck.source_type}
                   </p>
-                  <p className="mt-auto pt-4 font-mono text-2xl">{count}</p>
+                  <p className="mt-auto pt-4 text-2xl font-semibold">{count}</p>
                   <p className="text-xs text-muted-foreground">cards</p>
                 </Link>
               </li>

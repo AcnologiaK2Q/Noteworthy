@@ -95,7 +95,7 @@ export function NoteEditor({ id, initialTitle, initialContent }: NoteEditorProps
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Write in markdown…"
-          className="min-h-0 resize-none rounded-none border-0 border-b p-6 font-mono text-sm leading-relaxed shadow-none focus-visible:ring-0 lg:border-b-0 lg:border-r"
+          className="min-h-0 resize-none rounded-none border-0 border-b p-6 text-sm leading-relaxed shadow-none focus-visible:ring-0 lg:border-b-0 lg:border-r"
         />
 
         <div className="min-h-0 overflow-y-auto p-6">

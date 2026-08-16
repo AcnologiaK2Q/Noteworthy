@@ -63,7 +63,7 @@ export function StudyView({ cards }: { cards: StudyCard[] }) {
 
   return (
     <div className="mx-auto max-w-2xl py-8">
-      <p className="mb-4 text-center font-mono text-xs text-muted-foreground">
+      <p className="mb-4 text-center text-xs text-muted-foreground">
         {index + 1} / {cards.length}
       </p>
 

@@ -54,7 +54,7 @@ export function DocumentWorkspace({
         ) : (
           pages.map(({ pageNumber, items }) => (
             <div key={pageNumber ?? "unknown"} className="mb-8">
-              <p className="mb-2 font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              <p className="mb-2 text-xs font-medium uppercase tracking-widest text-muted-foreground">
                 {pageNumber ? `Page ${pageNumber}` : "Page unknown"}
               </p>
 

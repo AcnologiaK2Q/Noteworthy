@@ -50,7 +50,7 @@ export function Sidebar() {
   return (
     <aside className="hidden w-60 shrink-0 border-r border-border bg-sidebar md:flex md:flex-col">
       <div className="px-5 py-5">
-        <Link href="/dashboard">
+        <Link href="/" aria-label="Noteworthy home">
           <Logo />
         </Link>
       </div>

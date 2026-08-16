@@ -47,7 +47,7 @@ export default async function SettingsPage() {
         {rows.map(({ label, value }) => (
           <div key={label} className="flex items-center justify-between gap-4 px-5 py-3.5">
             <dt className="text-sm text-muted-foreground">{label}</dt>
-            <dd className="truncate font-mono text-sm">{value}</dd>
+            <dd className="truncate text-sm font-medium">{value}</dd>
           </div>
         ))}
       </dl>

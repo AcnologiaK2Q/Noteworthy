@@ -3,7 +3,7 @@ import Link from "next/link";
 import { FileText, Layers, MessageSquare, NotebookPen, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { BentoCard, StatTile } from "@/features/dashboard/components/BentoCard";
+import { BentoCard } from "@/features/dashboard/components/BentoCard";
 import { getUserStats } from "@/features/dashboard/stats";
 import { createClient } from "@/lib/supabase/server";
 
@@ -12,107 +12,125 @@ export const metadata: Metadata = { title: "Dashboard" };
 export default async function DashboardPage() {
   const supabase = createClient();
 
-  const [{ data: user }, stats] = await Promise.all([
-    supabase.auth.getUser().then((r) => ({ data: r.data.user })),
-    getUserStats(supabase),
-  ]);
+  const [
+    {
+      data: { user },
+    },
+    stats,
+  ] = await Promise.all([supabase.auth.getUser(), getUserStats(supabase)]);
 
+  // Scoped to the signer's own uploads. Demo papers are readable by everyone,
+  // so without this the list would show a paper the counts do not include.
   const { data: recentDocs } = await supabase
     .from("documents")
-    .select("id, title, status")
+    .select("id, title, status, page_count")
+    .eq("user_id", user?.id ?? "")
     .order("created_at", { ascending: false })
-    .limit(3);
+    .limit(4);
 
-  const firstName = user?.user_metadata?.full_name?.split(" ")[0];
+  const firstName = (user?.user_metadata?.full_name as string | undefined)?.split(" ")[0];
+  const hasPapers = (recentDocs?.length ?? 0) > 0;
+
+  // Only measured values appear. A metric with no data behind it is omitted
+  // rather than shown as a zero, so the line never overstates the work done.
+  const measured = [
+    stats.documentsReady > 0 && `${stats.documentsReady} papers analyzed`,
+    stats.questionsAnswered > 0 && `${stats.questionsAnswered} questions answered`,
+    stats.retrievalSuccessRate !== null && `${stats.retrievalSuccessRate}% grounded`,
+    stats.avgResponseMs !== null && `${(stats.avgResponseMs / 1000).toFixed(1)}s average`,
+  ].filter(Boolean) as string[];
 
   return (
-    <div className="bg-aurora min-h-full px-4 py-8 md:px-8">
-      <header className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {firstName ? `Welcome back, ${firstName}` : "Your workspace"}
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Upload a paper, ask a question, keep the evidence.
-        </p>
-      </header>
+    <div className="bg-aurora min-h-full">
+      <div className="mx-auto max-w-6xl px-5 py-10 md:px-8 md:py-14">
+        <header className="mb-8">
+          <h1 className="text-3xl font-semibold tracking-tight">
+            {firstName ? `Welcome back, ${firstName}` : "Your workspace"}
+          </h1>
 
-      <section className="mb-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatTile label="Papers analyzed" value={String(stats.documentsReady)} />
-        <StatTile label="Questions answered" value={String(stats.questionsAnswered)} />
-        <StatTile
-          label="Retrieval success"
-          value={stats.retrievalSuccessRate === null ? "N/A" : `${stats.retrievalSuccessRate}%`}
-          hint={stats.retrievalSuccessRate === null ? "No queries yet" : "Answers with strong evidence"}
-        />
-        <StatTile
-          label="Avg. response"
-          value={stats.avgResponseMs === null ? "N/A" : `${(stats.avgResponseMs / 1000).toFixed(1)}s`}
-          hint={stats.avgResponseMs === null ? "No queries yet" : undefined}
-        />
-      </section>
-
-      <section className="grid auto-rows-[minmax(11rem,auto)] gap-4 lg:grid-cols-4">
-        <BentoCard
-          title="Papers"
-          description="Upload a PDF and chat with its contents."
-          href="/documents"
-          icon={<FileText className="size-4" />}
-          className="lg:col-span-2 lg:row-span-2"
-        >
-          {recentDocs && recentDocs.length > 0 ? (
-            <ul className="grid gap-2">
-              {recentDocs.map((doc) => (
-                <li
-                  key={doc.id}
-                  className="flex items-center justify-between gap-3 rounded-lg bg-background/50 px-3 py-2"
-                >
-                  <span className="truncate text-sm">{doc.title}</span>
-                  <span className="shrink-0 text-xs capitalize text-muted-foreground">
-                    {doc.status}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="rounded-xl border border-dashed border-border p-6 text-center">
-              <Upload className="mx-auto size-5 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">No papers yet</p>
-              <Button asChild size="sm" className="mt-3">
-                <Link href="/documents">Upload your first paper</Link>
-              </Button>
-            </div>
-          )}
-        </BentoCard>
-
-        <BentoCard
-          title="Chat"
-          description="Ask general research questions."
-          href="/chat"
-          icon={<MessageSquare className="size-4" />}
-          className="lg:col-span-2"
-        />
-
-        <BentoCard
-          title="Notes"
-          description="Markdown notes, saved from answers."
-          href="/notes"
-          icon={<NotebookPen className="size-4" />}
-        >
-          <p className="font-mono text-2xl">{stats.notesCount}</p>
-        </BentoCard>
-
-        <BentoCard
-          title="Flashcards"
-          description="Generated from your papers and notes."
-          href="/flashcards"
-          icon={<Layers className="size-4" />}
-        >
-          <p className="font-mono text-2xl">{stats.cardsDue}</p>
-          <p className="text-xs text-muted-foreground">
-            {stats.flashcardsCount === 0 ? "No cards yet" : "due for review"}
+          <p className="mt-2 text-sm text-muted-foreground">
+            {measured.length > 0
+              ? measured.join("  ·  ")
+              : "Upload a paper, ask a question, keep the evidence."}
           </p>
-        </BentoCard>
-      </section>
+        </header>
+
+        <section className="grid auto-rows-[11rem] grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <BentoCard
+            title="Papers"
+            href="/documents"
+            icon={<FileText className="size-4" />}
+            className="sm:col-span-2 lg:row-span-2"
+            meta={hasPapers ? `${stats.documentsReady} indexed` : undefined}
+          >
+            {hasPapers ? (
+              <ul className="grid gap-1.5">
+                {recentDocs!.map((doc) => (
+                  <li
+                    key={doc.id}
+                    className="flex items-baseline justify-between gap-3 border-b border-border/40 pb-1.5 last:border-0"
+                  >
+                    <span className="min-w-0 flex-1 truncate text-sm">{doc.title}</span>
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {doc.status === "ready"
+                        ? doc.page_count
+                          ? `${doc.page_count} pages`
+                          : "Ready"
+                        : doc.status}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="flex h-full flex-col items-start justify-center gap-3">
+                <p className="text-lg font-medium">Drop in a paper</p>
+                <p className="max-w-xs text-xs leading-relaxed text-muted-foreground">
+                  Ask it anything and every answer comes back with the page it came from.
+                </p>
+                <Button asChild size="sm" className="mt-1">
+                  <Link href="/documents">
+                    <Upload className="size-3.5" />
+                    Upload a PDF
+                  </Link>
+                </Button>
+              </div>
+            )}
+          </BentoCard>
+
+          <BentoCard
+            title="Chat"
+            description="Open-ended research questions, no document attached."
+            href="/chat"
+            icon={<MessageSquare className="size-4" />}
+            className="sm:col-span-2"
+            meta={
+              stats.questionsAnswered > 0 ? `${stats.questionsAnswered} answered` : "nothing yet"
+            }
+          />
+
+          <BentoCard
+            title="Notes"
+            description="Markdown, and answers you kept."
+            href="/notes"
+            icon={<NotebookPen className="size-4" />}
+            meta={stats.notesCount > 0 ? `${stats.notesCount} saved` : "nothing yet"}
+          />
+
+          <BentoCard
+            title="Flashcards"
+            description="Written from your papers and notes."
+            href="/flashcards"
+            icon={<Layers className="size-4" />}
+            meta={
+              stats.flashcardsCount === 0
+                ? "nothing yet"
+                : stats.cardsDue > 0
+                  ? `${stats.cardsDue} due now`
+                  : `${stats.flashcardsCount} scheduled`
+            }
+          />
+        </section>
+      </div>
     </div>
   );
 }
